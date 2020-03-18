@@ -5,16 +5,11 @@ var question = require('../db').question
 
 
 
-/* GET home page. */
+//主页
 router.get('/', function(req, res, next) {
-  user.find(function (err, user){
-  if (err){
-      return res.status(500).send('find error')
-  }
   res.send('connected')
 })
-})
-
+//登陆
 router.post('/login', function (req, res, next) {
     let browserRes = res
     user.find({account: req.body.account}, function (err, docs) {
@@ -36,7 +31,8 @@ router.post('/login', function (req, res, next) {
             })
         } else {
             if (docs[0].password == req.body.password){
-                delete docs[0].password
+                docs[0].password = undefined
+                console.log(docs[0]);
                 browserRes.status(200).json({
                     message: '登陆成功!',
                     userData: docs[0]
@@ -49,5 +45,19 @@ router.post('/login', function (req, res, next) {
         }
     })
 });
+//获取用户信息
+router.put('/user', function (req, res, next) {
+    let browserRes = res
+    console.log(req.body)
+    user.findByIdAndUpdate(req.body._id, req.body, function (err, docs) {
+        if (err){
+            return browserRes.status(500).send(err)
+        } else {
+            browserRes.status(200).json({
+                message: '设置成功!'
+            })
+        }
+    })
+})
 
 module.exports = router;

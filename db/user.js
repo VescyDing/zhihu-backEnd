@@ -16,10 +16,22 @@ module.exports = {
     type: Number, //0未知 1男 2女
     default: 0
   },
-  intro: String,
-  area: String,
-  industry: String,
-  education: String,
+  intro: {
+    type: String,
+    default: ''
+  },
+  area: {
+    type: String,
+    default: ''
+  },
+  industry: {
+    type: String,
+    default: ''
+  },
+  education: {
+    type: String,
+    default: ''
+  },
   collect: Array, //收藏列表
   focus: Array, //关注列表
   stars: {
