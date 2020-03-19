@@ -28,6 +28,10 @@ module.exports = {
     type: String,
     default: ''
   },
+  job: {
+    type: String,
+    default: ''
+  },
   education: {
     type: String,
     default: ''
