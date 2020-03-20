@@ -59,5 +59,16 @@ router.put('/user', function (req, res, next) {
         }
     })
 })
+//提交新问题
+router.post('/question', function (req, res, next) {
+    new question(req.body).save((err, docs)=>{
+        if(err){
+            return res.status(500).send(err)
+        }
+        res.status(200).json({
+            message: '提问成功!'
+        })
+    })
+})
 
 module.exports = router;
