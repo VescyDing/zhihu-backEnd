@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var Func = require('./routerFunc')
 var user = require('../db').user
 var question = require('../db').question
 
@@ -46,6 +47,17 @@ router.post('/login', function (req, res, next) {
     })
 });
 //获取用户信息
+router.get('/user', function (req, res, next) {
+    let browserRes = res
+    user.findById(req.query._id,function (err, docs) {
+        if (Func.errFunc(err, browserRes)) return
+        browserRes.status(200).json({
+            message: '获取成功!',
+            userData: docs
+        })
+    })
+})
+//更新用户信息
 router.put('/user', function (req, res, next) {
     let browserRes = res
     console.log(req.body)
@@ -70,5 +82,47 @@ router.post('/question', function (req, res, next) {
         })
     })
 })
-
+//获取问题列表
+router.get('/question', function (req, res, next) {
+    let browserRes = req.body
+    question.find({}, function (err, docs) {
+        if (err){
+            return res.status(500).send(err)
+        }
+        console.log(docs);
+        res.status(200).json({
+            questionList: docs
+        })
+    })
+})
+//点赞/踩问题
+router.put('/question/startsCount', function (req, res, next) {
+    let browserRes = res
+    question.findByIdAndUpdate(req.body._id, req.body, (err, docs) => {
+        if (Func.errFunc(err, browserRes)) return
+        res.status(200).json({
+            message: '操作成功！'
+        })
+    })
+})
+//问题浏览数加一
+router.put('/question/visitCount', function (req, res, next) {
+    let browserRes = res
+    question.findByIdAndUpdate(req.body._id, req.body, (err, docs) => {
+        if (Func.errFunc(err, browserRes)) return
+        res.status(200).json({
+            message: '浏览成功！'
+        })
+    })
+})
+router.post('/user/collect', function (req, res, next) {
+    let browserRes = res
+    user.findByIdAndUpdate(req.body._id, req.body, (err, docs) => {
+        if (Func.errFunc(err, browserRes)) return
+        res.status(200).json({
+            message: '关注成功'
+        })
+        console.log(req.body);
+    })
+})
 module.exports = router;
