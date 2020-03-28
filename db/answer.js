@@ -1,5 +1,9 @@
 var mongoose = require('mongoose')
 module.exports = {
+    targetQuestion: { //想来想去，还是像这样保持表之间的双向连接，查找起来比较方便
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
     content: {
         type: String,
         default: ''

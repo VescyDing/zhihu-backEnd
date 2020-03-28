@@ -3,6 +3,8 @@ var router = express.Router();
 var Func = require('./routerFunc')
 var user = require('../db').user
 var question = require('../db').question
+var answer = require('../db').answer
+var comment = require('../db').comment
 
 
 
@@ -67,7 +69,8 @@ router.put('/user', function (req, res, next) {
             return browserRes.status(500).send(err)
         } else {
             browserRes.status(200).json({
-                message: '设置成功!'
+                message: '设置成功!',
+                newUserData: docs
             })
         }
     })
@@ -129,6 +132,38 @@ router.post('/user/collect', function (req, res, next) {
             })
         })
     })
-
+})
+//添加回答
+router.post('/answer', function (req, res, next) {
+    console.log(req.body);
+    new answer(JSON.parse(req.body.postData)).save((err, docs)=>{
+        if(err){
+            return res.status(500).send(err)
+        }
+        question.findByIdAndUpdate(req.body.questionId, {
+            $push: {
+                answerList: docs._id
+            },
+            $inc: {
+                answerCount: 1
+            }
+        }, (err, docs)=>{
+            res.status(200).json({
+                message: '回答成功!'
+            })
+        })
+    })
+})
+//获取回答列表
+router.get('/answer', function (req, res, next) {
+    answer.find({targetQuestion: req.query.questionId}, function (err, docs) {
+        if (err){
+            return res.status(500).send(err)
+        }
+        console.log(docs);
+        res.status(200).json({
+            answerList: docs
+        })
+    })
 })
 module.exports = router;
