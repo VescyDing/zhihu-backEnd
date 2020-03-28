@@ -4,6 +4,10 @@ var mongoose = require('mongoose')
 
 const user = require('./user')
 const question =  require('./question')
+const answer =  require('./answer')
+const comment =  require('./comment')
+
+
 
 mongoose.connect('mongodb://localhost/zhihu', { useNewUrlParser: true })
  
@@ -17,5 +21,7 @@ db.once('open', function callback() { //监听一次打开
  
 module.exports = {
     user: mongoose.model('User', new mongoose.Schema(user)),
-    question: mongoose.model('Question', new mongoose.Schema(question))
+    question: mongoose.model('Question', new mongoose.Schema(question)),
+    answer: mongoose.model('Answer', new mongoose.Schema(answer)),
+    comment: mongoose.model('Comment', new mongoose.Schema(comment)),
 };

@@ -8,7 +8,7 @@ var bodyParser = require('body-parser')
 
 var indexRouter = require('./routes/index');
 
-require('./db');
+// var api = require('./api/middleware')
 
 var app = express();
 
@@ -27,21 +27,24 @@ app.use(session({
   saveUninitialized: true,
   cookie: ('name', 'value',{maxAge:  31*24*60*60*1000,secure: false})
 }))
+
+//设置跨域请求
+app.all('*', function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Content-Type", "application/json;charset=utf-8");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
+  res.header("X-Powered-By",' 3.2.1')
+  next();
+});
+
+//善成给的中间件，但是依旧没有解决json跨域问题
+// app.use(api.cors)
+
 // 解析 application/json
 app.use(bodyParser.json());
 // 解析 application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded());
-
-
-//设置跨域请求
-app.all('*', function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
-  res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
-  res.header("X-Powered-By", ' 3.2.1')
-  res.header("Content-Type", "application/json;charset=utf-8");
-  next();
-});
 
 app.use('/', indexRouter);
 

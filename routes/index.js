@@ -12,6 +12,7 @@ router.get('/', function(req, res, next) {
 })
 //登陆
 router.post('/login', function (req, res, next) {
+    console.log(req);
     let browserRes = res
     user.find({account: req.body.account}, function (err, docs) {
         if (err){
@@ -73,6 +74,7 @@ router.put('/user', function (req, res, next) {
 })
 //提交新问题
 router.post('/question', function (req, res, next) {
+    console.log(req.body);
     new question(req.body).save((err, docs)=>{
         if(err){
             return res.status(500).send(err)
@@ -84,7 +86,6 @@ router.post('/question', function (req, res, next) {
 })
 //获取问题列表
 router.get('/question', function (req, res, next) {
-    let browserRes = req.body
     question.find({}, function (err, docs) {
         if (err){
             return res.status(500).send(err)
@@ -115,14 +116,19 @@ router.put('/question/visitCount', function (req, res, next) {
         })
     })
 })
+//关注问题
 router.post('/user/collect', function (req, res, next) {
     let browserRes = res
     user.findByIdAndUpdate(req.body._id, req.body, (err, docs) => {
         if (Func.errFunc(err, browserRes)) return
-        res.status(200).json({
-            message: '关注成功'
+        question.findByIdAndUpdate(req.body.questionId, {$inc: {startsCount: 1}}, (err, docs) => {
+            if (Func.errFunc(err, browserRes)) return
+            res.status(200).json({
+                questionNewData: docs,
+                message: '关注成功'
+            })
         })
-        console.log(req.body);
     })
+
 })
 module.exports = router;
