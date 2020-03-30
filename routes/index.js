@@ -14,7 +14,6 @@ router.get('/', function(req, res, next) {
 })
 //登陆
 router.post('/login', function (req, res, next) {
-    console.log(req);
     let browserRes = res
     user.find({account: req.body.account}, function (err, docs) {
         if (err){
@@ -36,7 +35,6 @@ router.post('/login', function (req, res, next) {
         } else {
             if (docs[0].password == req.body.password){
                 docs[0].password = undefined
-                console.log(docs[0]);
                 browserRes.status(200).json({
                     message: '登陆成功!',
                     userData: docs[0]
@@ -63,7 +61,6 @@ router.get('/user', function (req, res, next) {
 //更新用户信息
 router.put('/user', function (req, res, next) {
     let browserRes = res
-    console.log(req.body)
     user.findByIdAndUpdate(req.body._id, req.body, function (err, docs) {
         if (err){
             return browserRes.status(500).send(err)
@@ -77,7 +74,6 @@ router.put('/user', function (req, res, next) {
 })
 //提交新问题
 router.post('/question', function (req, res, next) {
-    console.log(req.body);
     new question(req.body).save((err, docs)=>{
         if(err){
             return res.status(500).send(err)
@@ -93,7 +89,6 @@ router.get('/question', function (req, res, next) {
         if (err){
             return res.status(500).send(err)
         }
-        console.log(docs);
         res.status(200).json({
             questionList: docs
         })
@@ -135,7 +130,6 @@ router.post('/user/collect', function (req, res, next) {
 })
 //添加回答
 router.post('/answer', function (req, res, next) {
-    console.log(req.body);
     new answer(JSON.parse(req.body.postData)).save((err, docs)=>{
         if(err){
             return res.status(500).send(err)
@@ -160,9 +154,50 @@ router.get('/answer', function (req, res, next) {
         if (err){
             return res.status(500).send(err)
         }
-        console.log(docs);
         res.status(200).json({
             answerList: docs
+        })
+    })
+})
+//点赞/踩回答
+router.put('/answer/startsCount', function (req, res, next) {
+    let browserRes = res
+    answer.findByIdAndUpdate(req.body._id, req.body, (err, docs) => {
+        if (Func.errFunc(err, browserRes)) return
+        res.status(200).json({
+            message: '操作成功！'
+        })
+    })
+})
+//添加评论
+router.post('/comment', function (req, res, next) {
+    console.log(req.body);
+    new comment(JSON.parse(req.body.postData)).save((err, docs)=>{
+        if(err){
+            return res.status(500).send(err)
+        }
+        answer.findByIdAndUpdate(req.body.answerId, {
+            $push: {
+                commentList: docs._id
+            },
+            $inc: {
+                commentCount: 1
+            }
+        }, (err, docs)=>{
+            res.status(200).json({
+                message: '评论成功!',
+            })
+        })
+    })
+})
+//获取评论
+router.get('/comment', function (req, res, next) {
+    comment.find({targetAnswer: req.query.answerId}, function (err, docs) {
+        if (err){
+            return res.status(500).send(err)
+        }
+        res.status(200).json({
+            commentList: docs
         })
     })
 })
