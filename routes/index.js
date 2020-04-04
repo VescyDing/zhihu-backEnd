@@ -201,4 +201,14 @@ router.get('/comment', function (req, res, next) {
         })
     })
 })
+//点赞/踩评论
+router.put('/comment/startsCount', function (req, res, next) {
+    let browserRes = res
+    comment.findByIdAndUpdate(req.body._id, req.body, (err, docs) => {
+        if (Func.errFunc(err, browserRes)) return
+        res.status(200).json({
+            message: '操作成功！'
+        })
+    })
+})
 module.exports = router;
